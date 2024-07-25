@@ -3,17 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iPhoneを監視カメラとして使う</title>
-  <meta name="description" content="iPhoneをMacのウェブカメラとして使用する方法と、高機能なウェブカメラ＆音声ツールを提供。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。">
-  <meta name="keywords" content="iPhone, Mac, 連携カメラ, ウェブカメラ, 音声ツール, ビジュアライザー, 録画, スナップショット">
-  <meta name="author" content="CamSync Pro">
-  <link rel="canonical" href="https://www.example.com/camsync-pro">
-  <meta property="og:title" content="iPhoneとMacの連携カメラアプリ - CamSync Pro">
-  <meta property="og:description" content="iPhoneをMacのウェブカメラとして使用する高機能ツール。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。">
-  <meta property="og:url" content="https://www.example.com/camsync-pro">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://www.example.com/images/camsync-pro-og.jpg">
-  <meta name="twitter:card" content="summary_large_image">
+  <title>高機能カメラ・音声アプリ（改良版ビジュアライザー）</title>
   <style>
     :root {
       --bg-color: #ffffff;
@@ -36,36 +26,23 @@
     body, html {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
       font-family: Arial, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
       transition: background-color 0.3s, color 0.3s;
-      line-height: 1.6;
     }
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
-    }
-    header {
-      text-align: center;
-      padding: 40px 0;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    h2 {
-      font-size: 2em;
-      margin-top: 40px;
-    }
-    p {
-      margin-bottom: 20px;
     }
     #videoContainer {
       width: 100%;
       max-width: 800px;
-      margin: 0 auto 20px;
+      margin-bottom: 20px;
       position: relative;
       resize: both;
       overflow: auto;
@@ -108,7 +85,7 @@
     #visualizerContainer {
       width: 100%;
       max-width: 800px;
-      margin: 20px auto;
+      margin-top: 20px;
     }
     #visualizer {
       width: 100%;
@@ -121,90 +98,39 @@
     #status {
       margin-top: 20px;
       font-style: italic;
-      text-align: center;
-    }
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      margin-top: 40px;
-    }
-    .feature {
-      flex-basis: 30%;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .feature img {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 15px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>iPhone監視カメラ for mac</h1>
-    <p>連携カメラ機能を用いて、iPhoneを監視カメラとして使うことができます。</p>
-  </header>
-
   <div class="container">
-    <section id="app">
-      <div id="videoContainer">
-        <video id="video" autoplay playsinline></video>
-      </div>
+    <div id="videoContainer">
+      <video id="video" autoplay playsinline></video>
+    </div>
 
-      <div id="controls">
-        <button id="startButton">開始</button>
-        <button id="stopButton" disabled>停止</button>
-        <button id="audioToggle" disabled>音声オン/オフ</button>
-        <button id="snapshotButton" disabled>スナップショット</button>
-        <button id="fullscreenButton" disabled>全画面表示</button>
-        <button id="recordButton" disabled>録画開始</button>
-        <button id="darkModeToggle">ダークモード切替</button>
-        <button id="visualizerToggle">ビジュアライザー表示/非表示</button>
-      </div>
+    <div id="controls">
+      <button id="startButton">開始</button>
+      <button id="stopButton" disabled>停止</button>
+      <button id="audioToggle" disabled>音声オン/オフ</button>
+      <button id="snapshotButton" disabled>スナップショット</button>
+      <button id="fullscreenButton" disabled>全画面表示</button>
+      <button id="recordButton" disabled>録画開始</button>
+      <button id="darkModeToggle">ダークモード切替</button>
+      <button id="visualizerToggle">ビジュアライザー表示/非表示</button>
+    </div>
 
-      <div>
-        <label for="volume">音量: </label>
-        <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
-      </div>
+    <div>
+      <label for="volume">音量: </label>
+      <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+    </div>
 
-      <div id="visualizerContainer">
-        <canvas id="visualizer"></canvas>
-      </div>
+    <div id="visualizerContainer">
+      <canvas id="visualizer"></canvas>
+    </div>
 
-      <div id="status"></div>
-    </section>
-
-    <section id="setup">
-      <h2>iPhoneとMacの連携セットアップ方法</h2>
-      <ol>
-        <li>MacとiPhoneが同じWi-Fiネットワークに接続されていることを確認します。</li>
-        <li>MacでFaceTimeを開きます。</li>
-        <li>メニューバーから[ビデオ] > [カメラを選択]を選択します。</li>
-        <li>使用したいiPhoneを選択します。</li>
-        <li>iPhoneに確認メッセージが表示されたら、[ビデオの使用を許可]をタップします。</li>
-      </ol>
-      <p>詳細な手順については、<a href="https://support.apple.com/ja-jp/guide/mac-help/mchl77879b8a/mac" target="_blank" rel="noopener noreferrer">Appleの公式ガイド</a>をご参照ください。</p>
-    </section>
-
-    <section id="faq">
-      <h2>よくある質問</h2>
-      <dl>
-        <dt>Q: CamSync Proは有料ですか？</dt>
-        <dd>A: いいえ、CamSync Proは完全無料でご利用いただけます。</dd>
-        <dt>Q: セキュリティは大丈夫ですか？</dt>
-        <dd>A: はい、すべての処理はローカルで行われ、データが外部に送信されることはありません。</dd>
-      </dl>
-    </section>
+    <div id="status"></div>
   </div>
 
-  <footer>
-    <p>&copy; keisuke2236. All rights reserved.</p>
-  </footer>
-
   <script>
-    // 既存のJavaScriptコードをここに配置
     const video = document.getElementById('video');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
@@ -301,7 +227,7 @@
       const imageDataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = imageDataUrl;
-      link.download = 'camsync-pro-snapshot.png';
+      link.download = 'snapshot.png';
       link.click();
       updateStatus('スナップショットを保存しました。');
     });
@@ -405,7 +331,7 @@
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = 'camsync-pro-recording.webm';
+        a.download = 'recorded-video.webm';
         document.body.appendChild(a);
         a.click();
         setTimeout(() => {
@@ -425,26 +351,6 @@
       video.style.width = `${videoContainer.clientWidth}px`;
       video.style.height = `${videoContainer.clientHeight}px`;
     });
-
-    // SEO対策: ページの構造化データを追加
-    const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "CamSync Pro",
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "Mac OS, iOS",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "iPhoneをMacのウェブカメラとして使用する高機能ツール。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。"
-    };
-
-    const script = document.createElement('script');
-    script.type = "application/ld+json";
-    script.text = JSON.stringify(structuredData);
-    document.head.appendChild(script);
   </script>
 </body>
 </html>
