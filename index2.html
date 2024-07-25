@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhoneを監視カメラとして使う</title>
+  <meta name="description" content="iPhoneをMacのウェブカメラとして使用する方法と、高機能なウェブカメラ＆音声ツールを提供。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。">
+  <meta name="keywords" content="iPhone, Mac, 連携カメラ, ウェブカメラ, 音声ツール, ビジュアライザー, 録画, スナップショット">
+  <meta name="author" content="CamSync Pro">
+  <link rel="canonical" href="https://www.example.com/camsync-pro">
+  <meta property="og:title" content="iPhoneとMacの連携カメラアプリ - CamSync Pro">
+  <meta property="og:description" content="iPhoneをMacのウェブカメラとして使用する高機能ツール。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。">
+  <meta property="og:url" content="https://www.example.com/camsync-pro">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://www.example.com/images/camsync-pro-og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --button-bg: #4CAF50;
+      --button-text: #ffffff;
+      --visualizer-bg: #f0f0f0;
+      --visualizer-gradient-start: #ff6b6b;
+      --visualizer-gradient-end: #4ecdc4;
+    }
+    .dark-mode {
+      --bg-color: #333333;
+      --text-color: #ffffff;
+      --button-bg: #45a049;
+      --button-text: #ffffff;
+      --visualizer-bg: #1a1a1a;
+      --visualizer-gradient-start: #ff6b6b;
+      --visualizer-gradient-end: #4ecdc4;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      padding: 40px 0;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 2em;
+      margin-top: 40px;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    #videoContainer {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      position: relative;
+      resize: both;
+      overflow: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: 1px solid #ccc;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #volume {
+      width: 200px;
+    }
+    #visualizerContainer {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    #visualizer {
+      width: 100%;
+      height: 150px;
+      background-color: var(--visualizer-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: background-color 0.3s;
+    }
+    #status {
+      margin-top: 20px;
+      font-style: italic;
+      text-align: center;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 40px;
+    }
+    .feature {
+      flex-basis: 30%;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .feature img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>iPhone監視カメラ for mac</h1>
+    <p>連携カメラ機能を用いて、iPhoneを監視カメラとして使うことができます。</p>
+  </header>
+
+  <div class="container">
+    <section id="app">
+      <div id="videoContainer">
+        <video id="video" autoplay playsinline></video>
+      </div>
+
+      <div id="controls">
+        <button id="startButton">開始</button>
+        <button id="stopButton" disabled>停止</button>
+        <button id="audioToggle" disabled>音声オン/オフ</button>
+        <button id="snapshotButton" disabled>スナップショット</button>
+        <button id="fullscreenButton" disabled>全画面表示</button>
+        <button id="recordButton" disabled>録画開始</button>
+        <button id="darkModeToggle">ダークモード切替</button>
+        <button id="visualizerToggle">ビジュアライザー表示/非表示</button>
+      </div>
+
+      <div>
+        <label for="volume">音量: </label>
+        <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+      </div>
+
+      <div id="visualizerContainer">
+        <canvas id="visualizer"></canvas>
+      </div>
+
+      <div id="status"></div>
+    </section>
+
+    <section id="setup">
+      <h2>iPhoneとMacの連携セットアップ方法</h2>
+      <ol>
+        <li>MacとiPhoneが同じWi-Fiネットワークに接続されていることを確認します。</li>
+        <li>MacでFaceTimeを開きます。</li>
+        <li>メニューバーから[ビデオ] > [カメラを選択]を選択します。</li>
+        <li>使用したいiPhoneを選択します。</li>
+        <li>iPhoneに確認メッセージが表示されたら、[ビデオの使用を許可]をタップします。</li>
+      </ol>
+      <p>詳細な手順については、<a href="https://support.apple.com/ja-jp/guide/mac-help/mchl77879b8a/mac" target="_blank" rel="noopener noreferrer">Appleの公式ガイド</a>をご参照ください。</p>
+    </section>
+
+    <section id="faq">
+      <h2>よくある質問</h2>
+      <dl>
+        <dt>Q: CamSync Proは有料ですか？</dt>
+        <dd>A: いいえ、CamSync Proは完全無料でご利用いただけます。</dd>
+        <dt>Q: セキュリティは大丈夫ですか？</dt>
+        <dd>A: はい、すべての処理はローカルで行われ、データが外部に送信されることはありません。</dd>
+      </dl>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; keisuke2236. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // 既存のJavaScriptコードをここに配置
+    const video = document.getElementById('video');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const audioToggle = document.getElementById('audioToggle');
+    const snapshotButton = document.getElementById('snapshotButton');
+    const fullscreenButton = document.getElementById('fullscreenButton');
+    const recordButton = document.getElementById('recordButton');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const visualizerToggle = document.getElementById('visualizerToggle');
+    const volumeSlider = document.getElementById('volume');
+    const statusDiv = document.getElementById('status');
+    const visualizer = document.getElementById('visualizer');
+    const visualizerContainer = document.getElementById('visualizerContainer');
+    let stream;
+    let audioContext;
+    let sourceNode;
+    let gainNode;
+    let analyser;
+    let mediaRecorder;
+    let recordedChunks = [];
+    let isVisualizerVisible = true;
+
+    function updateStatus(message) {
+      statusDiv.textContent = message;
+    }
+
+    startButton.addEventListener('click', async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        video.srcObject = stream;
+        
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        sourceNode = audioContext.createMediaStreamSource(stream);
+        gainNode = audioContext.createGain();
+        analyser = audioContext.createAnalyser();
+        sourceNode.connect(gainNode);
+        gainNode.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        startButton.disabled = true;
+        stopButton.disabled = false;
+        audioToggle.disabled = false;
+        snapshotButton.disabled = false;
+        fullscreenButton.disabled = false;
+        recordButton.disabled = false;
+        updateStatus('カメラとマイクを起動しました。');
+        visualize();
+      } catch (err) {
+        console.error('カメラまたはマイクの起動に失敗しました:', err);
+        updateStatus(`エラー: ${err.message}`);
+      }
+    });
+
+    stopButton.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        if (audioContext) {
+          audioContext.close();
+        }
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        audioToggle.disabled = true;
+        snapshotButton.disabled = true;
+        fullscreenButton.disabled = true;
+        recordButton.disabled = true;
+        updateStatus('停止しました。');
+      }
+    });
+
+    audioToggle.addEventListener('click', () => {
+      if (stream) {
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) {
+          audioTrack.enabled = !audioTrack.enabled;
+          audioToggle.textContent = audioTrack.enabled ? '音声オフ' : '音声オン';
+          updateStatus(`音声を${audioTrack.enabled ? 'オン' : 'オフ'}にしました。`);
+        }
+      }
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      if (gainNode) {
+        gainNode.gain.setValueAtTime(volumeSlider.value, audioContext.currentTime);
+        updateStatus(`音量を${Math.round(volumeSlider.value * 100)}%に設定しました。`);
+      }
+    });
+
+    snapshotButton.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const imageDataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = imageDataUrl;
+      link.download = 'camsync-pro-snapshot.png';
+      link.click();
+      updateStatus('スナップショットを保存しました。');
+    });
+
+    fullscreenButton.addEventListener('click', () => {
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.mozRequestFullScreen) {
+        video.mozRequestFullScreen();
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      } else if (video.msRequestFullscreen) {
+        video.msRequestFullscreen();
+      }
+    });
+
+    recordButton.addEventListener('click', () => {
+      if (recordButton.textContent === '録画開始') {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'ライトモード切替' : 'ダークモード切替';
+    });
+
+    visualizerToggle.addEventListener('click', () => {
+      isVisualizerVisible = !isVisualizerVisible;
+      visualizerContainer.style.display = isVisualizerVisible ? 'block' : 'none';
+      visualizerToggle.textContent = isVisualizerVisible ? 'ビジュアライザー非表示' : 'ビジュアライザー表示';
+    });
+
+    function visualize() {
+      const canvas = visualizer;
+      const canvasCtx = canvas.getContext('2d');
+      const WIDTH = canvas.width;
+      const HEIGHT = canvas.height;
+
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+      function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--visualizer-bg');
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        const barWidth = (WIDTH / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        const gradient = canvasCtx.createLinearGradient(0, 0, WIDTH, 0);
+        gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--visualizer-gradient-start'));
+        gradient.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--visualizer-gradient-end'));
+
+        for(let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i] / 255 * HEIGHT;
+
+          canvasCtx.fillStyle = gradient;
+          canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+          x += barWidth + 1;
+        }
+      }
+      draw();
+    }
+
+    function startRecording() {
+      recordedChunks = [];
+      const options = { mimeType: 'video/webm' };
+      try {
+        mediaRecorder = new MediaRecorder(stream, options);
+      } catch (e) {
+        console.error('MediaRecorder is not supported by this browser.');
+        return;
+      }
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.start();
+      recordButton.textContent = '録画停止';
+      updateStatus('録画を開始しました。');
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      recordButton.textContent = '録画開始';
+      updateStatus('録画を停止しました。');
+    }
+
+    function handleDataAvailable(event) {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'camsync-pro-recording.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+      }
+    }
+
+    // リサイズ可能なビデオコンテナの設定
+    const videoContainer = document.getElementById('videoContainer');
+    videoContainer.style.width = '640px';
+    videoContainer.style.height = '480px';
+
+    // ビデオコンテナのリサイズイベントリスナー
+    videoContainer.addEventListener('mouseup', () => {
+      video.style.width = `${videoContainer.clientWidth}px`;
+      video.style.height = `${videoContainer.clientHeight}px`;
+    });
+
+    // SEO対策: ページの構造化データを追加
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "CamSync Pro",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Mac OS, iOS",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "iPhoneをMacのウェブカメラとして使用する高機能ツール。リアルタイムビジュアライザー、録画機能、スナップショット機能付き。"
+    };
+
+    const script = document.createElement('script');
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
+  </script>
+</body>
+</html>
